@@ -107,6 +107,25 @@ What v1 *does* include:
 
 Confidence is a **model self-report + heuristics**, not a calibrated probability. Treat caveats as warnings for humans and eval harnesses.
 
+## Roadmap (upgrades to one system)
+
+We improve **Signal Lab** in place—same research → sales-outreach product—rather than shipping disconnected demos. Each upgrade adds one engineering capability.
+
+| Upgrade | Focus | Status |
+|---------|--------|--------|
+| **1. Reliable model app** | One LLM path (Ollama), env config, streaming, timeouts, token limits, structured answer + confidence/caveats, metrics, tests | **Done (v1)** |
+| **2. Evidence-backed research** | Search/fetch web or docs, rank passages, citations + timestamps, refuse when evidence is thin; inspect retrieved sources | Planned |
+| **3. Tool-using sales assistant** | Tools: company search, lead lookup, qualify, draft outreach; app validates args + **human approve** before send; MCP-style tool schemas; tests for bad args / permission bypass | Planned |
+| **4. Persistent business state** | Postgres for leads, findings, drafts; resume after restart; don’t confuse app memory with vector RAG | Planned |
+| **5. Durable multi-step workflow** | Research → qualify → draft → wait approval → send; checkpoints, retries, pause/resume (LangGraph / Temporal-style) | Planned |
+| **6. Eval + observability** | Golden scenarios (weak evidence, bad tools, injection); measure qualification, citations, tool choice, latency/cost; traces (e.g. Langfuse) | Planned |
+| **7. Production hardening** | AuthZ, secrets, budgets, Docker, CI; monitor failures; simplest stack that meets reliability needs | Planned |
+| **8. Portfolio polish** | One end-to-end sales research + outreach system: architecture docs, setup, automated tests, eval baseline, success/failure traces | Planned |
+
+**Done when (per upgrade):** you can inspect failures (API + LLM), verify evidence/citations, prove tools stay permissioned, resume from state, recover mid-workflow, and re-run evals before/after deploy.
+
+Near-term build order inside upgrades 1→3: stream tokens in the UI → retrieval + citations → tool loop with visible trace → approve-only email/CRM drafts.
+
 ## Tests
 
 ```powershell
