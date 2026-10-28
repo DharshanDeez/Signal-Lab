@@ -4,12 +4,39 @@ Open-source local research agent: **FastAPI + Ollama** backend and **Vite + Reac
 
 Per run it tracks tokens, budget remaining, confidence, score, latency, and tokens/sec.
 
+## Roadmap (upgrades to one system)
+
+We improve **Signal Lab** in place, one research agent you can run and extend, rather than shipping disconnected demos. Each upgrade adds one engineering capability.
+
+**What do you need in the system?** Open an issue or reach out with the capabilities that matter for your workflow (providers, retrieval, tools, memory, approvals, evals, deploy). The open-source path below is the default.
+
+Need a **production system**, customised business flows, large-data pipelines, reliability, and deployable architecture? Let’s discuss. Free consultation:
+
+- Email: [dharshandeez111@gmail.com](mailto:dharshandeez111@gmail.com)
+- LinkedIn: [Dharshan A](https://www.linkedin.com/in/dharshan-a-1a9984278/)
+
+| Upgrade | Focus | Status |
+|---------|--------|--------|
+| **1. Reliable model app** | One LLM path (Ollama), env config, streaming, timeouts, token limits, structured answer + confidence/caveats, metrics, tests | **Done (v1)** |
+| **2. Multi-provider models** | Same ask/stream API over **local (Ollama)** plus cloud: **OpenAI, Anthropic, OpenRouter** (and OpenAI-compatible bases); pick via env/`LLM_PROVIDER` + model id; shared timeouts, token limits, metrics; secrets stay in `.env` | Planned |
+| **3. Evidence-backed research** | Search/fetch web or docs, rank passages, citations + timestamps, refuse when evidence is thin; inspect retrieved sources | Planned |
+| **4. Tool-using assistant** | Pluggable tools with validated args + **human approve** before side effects; MCP-style schemas; tests for bad args / permission bypass | Planned |
+| **5. Persistent business state** | Postgres for runs, findings, drafts; resume after restart; don’t confuse app memory with vector RAG | Planned |
+| **6. Durable multi-step workflow** | Research → act → wait approval → continue; checkpoints, retries, pause/resume (LangGraph / Temporal-style) | Planned |
+| **7. Eval + observability** | Golden scenarios (weak evidence, bad tools, injection); measure quality, citations, tool choice, latency/cost; traces (e.g. Langfuse) | Planned |
+| **8. Production hardening** | AuthZ, secrets, budgets, Docker, CI; monitor failures; simplest stack that meets reliability needs | Planned |
+| **9. Portfolio polish** | One end-to-end research system: architecture docs, setup, automated tests, eval baseline, success/failure traces | Planned |
+
+**Done when (per upgrade):** you can inspect failures (API + LLM), swap local↔cloud providers without rewriting callers, verify evidence/citations, prove tools stay permissioned, resume from state, recover mid-workflow, and re-run evals before/after deploy.
+
+Near-term build order inside upgrades 1→4: stream tokens in the UI → provider switch (Ollama / OpenAI / Anthropic / OpenRouter) → retrieval + citations → tool loop with visible trace → approve-only side effects.
+
 ## Stack
 
 | Layer | Tech |
 |-------|------|
 | API | FastAPI, httpx, pydantic-settings |
-| LLM | Ollama (local) |
+| LLM | Ollama (local) today; OpenAI / Anthropic / OpenRouter planned (upgrade 2) |
 | UI | Vite, React, TypeScript, Tailwind |
 
 ## Project layout
@@ -53,7 +80,7 @@ uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 - Health: http://127.0.0.1:8000/health  
-- Docs: http://127.0.0.1:8000/docs  
+- Docs: http://127.0.0.1:8000/docs
 
 ### 3. Frontend
 
@@ -106,25 +133,6 @@ What v1 *does* include:
 - **Streaming** — `/ask/stream` so UIs can show tokens without waiting for the full reply
 
 Confidence is a **model self-report + heuristics**, not a calibrated probability. Treat caveats as warnings for humans and eval harnesses.
-
-## Roadmap (upgrades to one system)
-
-We improve **Signal Lab** in place—same research → sales-outreach product—rather than shipping disconnected demos. Each upgrade adds one engineering capability.
-
-| Upgrade | Focus | Status |
-|---------|--------|--------|
-| **1. Reliable model app** | One LLM path (Ollama), env config, streaming, timeouts, token limits, structured answer + confidence/caveats, metrics, tests | **Done (v1)** |
-| **2. Evidence-backed research** | Search/fetch web or docs, rank passages, citations + timestamps, refuse when evidence is thin; inspect retrieved sources | Planned |
-| **3. Tool-using sales assistant** | Tools: company search, lead lookup, qualify, draft outreach; app validates args + **human approve** before send; MCP-style tool schemas; tests for bad args / permission bypass | Planned |
-| **4. Persistent business state** | Postgres for leads, findings, drafts; resume after restart; don’t confuse app memory with vector RAG | Planned |
-| **5. Durable multi-step workflow** | Research → qualify → draft → wait approval → send; checkpoints, retries, pause/resume (LangGraph / Temporal-style) | Planned |
-| **6. Eval + observability** | Golden scenarios (weak evidence, bad tools, injection); measure qualification, citations, tool choice, latency/cost; traces (e.g. Langfuse) | Planned |
-| **7. Production hardening** | AuthZ, secrets, budgets, Docker, CI; monitor failures; simplest stack that meets reliability needs | Planned |
-| **8. Portfolio polish** | One end-to-end sales research + outreach system: architecture docs, setup, automated tests, eval baseline, success/failure traces | Planned |
-
-**Done when (per upgrade):** you can inspect failures (API + LLM), verify evidence/citations, prove tools stay permissioned, resume from state, recover mid-workflow, and re-run evals before/after deploy.
-
-Near-term build order inside upgrades 1→3: stream tokens in the UI → retrieval + citations → tool loop with visible trace → approve-only email/CRM drafts.
 
 ## Tests
 
